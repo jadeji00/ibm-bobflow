@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react'
-import { fetchUser, type User } from '../api/user'
+import { useEffect, useRef, useState } from 'react'
+import { fetchUser, uploadAvatar, type User } from '../api/user'
 
 export default function Profile() {
   const [user, setUser] = useState<User | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [uploading, setUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     fetchUser()
@@ -11,7 +13,26 @@ export default function Profile() {
       .catch((err: Error) => setError(err.message))
   }, [])
 
-  if (error) {
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploading(true)
+    setError(null)
+
+    try {
+      const updated = await uploadAvatar(file)
+      setUser(updated)
+    } catch (err) {
+      setError((err as Error).message)
+    } finally {
+      setUploading(false)
+      // Reset the input so the same file can be re-selected after an error
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
+
+  if (error && !user) {
     return <main className="card"><p className="error">{error}</p></main>
   }
 
@@ -30,6 +51,23 @@ export default function Profile() {
           <span className="avatar-placeholder">No Avatar</span>
         )}
       </div>
+
+      <div className="avatar-upload">
+        <label htmlFor="avatar-input" className={uploading ? 'muted' : undefined}>
+          {uploading ? 'Uploading…' : 'Choose avatar'}
+        </label>
+        <input
+          id="avatar-input"
+          ref={fileInputRef}
+          type="file"
+          accept="image/jpeg,image/png"
+          disabled={uploading}
+          onChange={handleFileChange}
+          style={{ display: 'none' }}
+        />
+      </div>
+
+      {error && <p className="error">{error}</p>}
 
       <dl className="fields">
         <dt>Username</dt>
