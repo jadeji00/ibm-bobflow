@@ -64,6 +64,14 @@ Retest ──────┘
 1. **Only Phase 5, 7 may modify code.** Phases 1–4 and 6, 8, 9 are read-only.
 2. **Verify must execute tests for real.** Inferring results from reading code is
    not verification.
-3. **Security is investigated in parallel, not bolted on afterwards.**
+3. **Security is investigated independently, not bolted on afterwards.**
 4. **Conflicts between agents are resolved explicitly**, not silently averaged.
 5. **Every stage leaves an artifact.** The chain of artifacts *is* the evidence.
+
+## Note on Phase 3 execution
+
+Phase 3 is *specified* as parallel: the three specialists have no shared state
+and no ordering dependency on each other. Whether they actually run concurrently
+depends on the runtime. In this build they were executed as three **separate
+sequential IBM Bob tasks**. The invariant that matters is the read-only
+constraint and the distinctness of each mandate — not the overlap.

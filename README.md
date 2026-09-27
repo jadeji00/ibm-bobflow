@@ -22,6 +22,12 @@ The parallel investigation stage runs three independent, **read-only**
 specialist agents — **Architecture**, **Security**, and **Testing** — whose
 findings are reconciled before a single line of code is written.
 
+> **On execution:** BobFlow specifies these three investigations as independent.
+> In this build they were run as three **separate sequential IBM Bob tasks**,
+> not as concurrent subagents. The workflow is runtime-agnostic — what it
+> requires is that each specialist has a distinct mandate and cannot edit code,
+> not that they overlap in wall-clock time.
+
 See [`bobflow/workflow.md`](bobflow/workflow.md) for the full stage table.
 
 ## What is the demo?
@@ -39,7 +45,7 @@ The demo app is the **target codebase**. Bob is the **engine**.
 | **Agent mode** | Phases 5 and 7 — the only phases that edit code |
 | **Plan mode** | Phases 1–2 — understanding and planning, no edits |
 | **Skills** | `bobflow/skills/feature-delivery/SKILL.md` |
-| **Subagents (parallel tasks)** | Phase 3 — Architecture / Security / Testing agents, run concurrently |
+| **Specialist investigation tasks** | Phase 3 — Architecture / Security / Testing agents, each run as its own read-only task |
 | **Project context** | `AGENTS.md` |
 | **Command execution** | Phase 6 — `npm test` is executed, not simulated |
 | **Verification** | Phases 6–7 — real test output drives the fix loop |
